@@ -65,7 +65,9 @@ var newBorderColor = '#ffffff'; // 90
 
 var Brightness_Threshold = 0.94; // a number between 0 and 1
 
-// For websites updating their contents via ajax, NoBrighter can run in background and convert background color periodically.
+// For websites updating their contents via ajax, NoBrighter can run in background and convert background color periodically. vvvvvvvvvvvvvvv */
+// Replaced with code that intercepts ajax requests and runs functions when they finish
+/*
 var longRunSites = [
   'mail.google.com',
   'docs.google.com',
@@ -87,6 +89,8 @@ var longRunSites = [
   'reader.aol.com',
   'identityfusion.atlassian.net',
 ];
+*/
+// For websites updating their contents via ajax, NoBrighter can run in background and convert background color periodically. ^^^^^^^^^^^^^^^ */
 
 var $minHeight = 6;
 
@@ -95,12 +99,13 @@ var $minHeight = 6;
 var alltags = document.getElementsByTagName("*"); // query all elements to change background
 var bodyChanged = false; // for tracking changed elements
 
-// check if background is transparent
+/* check if background is transparent vvvvvvvvvvvvvvv */
 function isTransparent(color) {
     return color === 'transparent' || color.replace(/ /g, '') === 'rgba(0,0,0,0)';
 }
+/* check if background is transparent ^^^^^^^^^^^^^^^ */
 
-// change background to set color
+/* change background to set color vvvvvvvvvvvvvvv */
 function changeBgcolor(elem) {
     // check if appropriate type of element
     if (elem.nodeType !== Node.ELEMENT_NODE) {
@@ -130,8 +135,9 @@ function changeBgcolor(elem) {
         return false;
     }
 }
+/* change background to set color ^^^^^^^^^^^^^^^ */
 
-// unknown function at this time
+/* unknown function at this time vvvvvvvvvvvvvvv */
 function changeTransparent(elem) {
     // computer background color of element
     var bgcolor = window.getComputedStyle(elem, null).backgroundColor;
@@ -142,6 +148,7 @@ function changeTransparent(elem) {
         elem.style.backgroundColor = targetColor;
     }
 }
+/* unknown function at this time ^^^^^^^^^^^^^^^ */
 
 function changeAll() {
     // iterate through all elements on site
@@ -160,7 +167,7 @@ function changeAll() {
     }
 }
 
-// creates css to adjust pseudo after properties
+/* creates css to adjust pseudo after properties vvvvvvvvvvvvvvv */
 var newStyleSheet = document.createElement('style');
 newStyleSheet.innerHTML = `
     /* changes border color for pseudo after elements */
@@ -174,8 +181,9 @@ newStyleSheet.innerHTML = `
 	`;
 // append new style sheet to website
 window.document.head.appendChild(newStyleSheet);
+/* creates css to adjust pseudo after properties ^^^^^^^^^^^^^^^ */
 
-// get all children of children
+/* get all children of children vvvvvvvvvvvvvvv */
 function getDescendants(node, accum) {
     var i;
     accum = accum || [];
@@ -185,8 +193,9 @@ function getDescendants(node, accum) {
     }
     return accum;
 }
+/* get all children of children ^^^^^^^^^^^^^^^ */
 
-// change border color
+/* change border color vvvvvvvvvvvvvvv */
 function changeBorderColor(elem) {
     // confirm appropriate type of element
     if (elem.nodeType !== Node.ELEMENT_NODE) {
@@ -235,8 +244,9 @@ function changeBorderColor(elem) {
         return false;
     }
 }
+/* change border color ^^^^^^^^^^^^^^^ */
 
-// iterate through all divs in grid to change border colors
+/* iterate through all divs in grid to change border colors vvvvvvvvvvvvvvv */
 function changeAllBorder() {
     // choose elements to target for change border
     var allDivs = document.querySelectorAll('div[role="grid"]'); // example: var allDivs = document.querySelectorAll('div[role="grid"],div[role="gridcell"],div[role="row"]');
@@ -271,6 +281,7 @@ function changeAllBorder() {
         }
     }
 }
+/* iterate through all divs in grid to change border colors ^^^^^^^^^^^^^^^ */
 
 changeAll();
 changeAllBorder();
@@ -282,7 +293,9 @@ if (window.top == window) {
     }
 }
 
-// iterates through all sites set in longRun section
+/* iterates through all sites set in longRun section vvvvvvvvvvvvvvv */
+// replaced with code that intercepts ajax requests and runs functions once they are completed
+/*
 for (var i = 0; i < longRunSites.length; i++) {
     if (location.hostname === longRunSites[i]) {
         // logs in console if site is going to be checked forever
@@ -294,9 +307,58 @@ for (var i = 0; i < longRunSites.length; i++) {
         break;
     }
 }
+*/
+/* iterates through all sites set in longRun section ^^^^^^^^^^^^^^^ */
 
+/* unknown function vvvvvvvvvvvvvvv */
 /*
 document.body.addEventListener('DOMNodeInserted', function(e) {
   changeBgcolor(e.target);
 }, false);
 */
+/* unknown function ^^^^^^^^^^^^^^^ */
+
+/* group change functions together vvvvvvvvvvvvvvv */
+function changeAllElements() {
+    changeAll();
+    changeAllBorder();
+}
+// group change functions together ^^^^^^^^^^^^^^^ */
+
+// capture ajax requests and run change functions when they are finished vvvvvvvvvvvvvvv */
+var open = window.XMLHttpRequest.prototype.open,
+    send = window.XMLHttpRequest.prototype.send;
+
+function openReplacement(method, url, async, user, password) {
+    this._url = url;
+    return open.apply(this, arguments);
+}
+
+function sendReplacement(data) {
+    if(this.onreadystatechange) {
+        this._onreadystatechange = this.onreadystatechange;
+    }
+
+    // console.log('Request sent');
+
+    this.onreadystatechange = onReadyStateChangeReplacement;
+    return send.apply(this, arguments);
+}
+
+function onReadyStateChangeReplacement() {
+
+    changeAllElements()
+    console.log('All elements should be changed');
+
+    if(this._onreadystatechange) {
+        return this._onreadystatechange.apply(this, arguments);
+    }
+}
+
+window.XMLHttpRequest.prototype.open = openReplacement;
+window.XMLHttpRequest.prototype.send = sendReplacement;
+
+var request = new XMLHttpRequest();
+request.open('GET', '.', true);
+request.send();
+/* capture ajax requests and run change functions when they are finished ^^^^^^^^^^^^^^^ */

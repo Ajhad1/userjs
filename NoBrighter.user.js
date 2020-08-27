@@ -65,7 +65,7 @@ var newBorderColor = '#ffffff'; // 90
 
 var Brightness_Threshold = 0.94; // a number between 0 and 1
 
-// For websites updating their contents via ajax, NoBrighter can run in background and convert background color periodically. vvvvvvvvvvvvvvv */
+/* For websites updating their contents via ajax, NoBrighter can run in background and convert background color periodically. vvvvvvvvvvvvvvv */
 // Replaced with code that intercepts ajax requests and runs functions when they finish
 /*
 var longRunSites = [
@@ -90,7 +90,7 @@ var longRunSites = [
   'identityfusion.atlassian.net',
 ];
 */
-// For websites updating their contents via ajax, NoBrighter can run in background and convert background color periodically. ^^^^^^^^^^^^^^^ */
+/* For websites updating their contents via ajax, NoBrighter can run in background and convert background color periodically. ^^^^^^^^^^^^^^^ */
 
 var $minHeight = 6;
 
@@ -323,9 +323,9 @@ function changeAllElements() {
     changeAll();
     changeAllBorder();
 }
-// group change functions together ^^^^^^^^^^^^^^^ */
+/* group change functions together ^^^^^^^^^^^^^^^ */
 
-// capture ajax requests and run change functions when they are finished vvvvvvvvvvvvvvv */
+/* capture ajax requests and run change functions when they are finished vvvvvvvvvvvvvvv */
 var open = window.XMLHttpRequest.prototype.open,
     send = window.XMLHttpRequest.prototype.send;
 

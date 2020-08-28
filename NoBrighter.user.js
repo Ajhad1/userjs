@@ -96,8 +96,26 @@ var $minHeight = 6;
 
 // ========== End of config ========== //
 
+// ========== Instantiation ========== //
+
 var alltags = document.getElementsByTagName("*"); // query all elements to change background
 var bodyChanged = false; // for tracking changed elements
+
+/* creates css to adjust pseudo after properties vvvvvvvvvvvvvvv */
+var newStyleSheet = document.createElement('style');
+newStyleSheet.innerHTML = `
+    /* changes border color for pseudo after elements */
+    .changeBorder:after {
+        border-color: `+newBorderColor+`;
+    }
+    /* changes border colors on class Box */
+    .Box, .Box-header {
+        border-color: `+newBorderColor+`;
+    }
+	`;
+// append new style sheet to website
+window.document.head.appendChild(newStyleSheet);
+/* creates css to adjust pseudo after properties ^^^^^^^^^^^^^^^ */
 
 /* check if background is transparent vvvvvvvvvvvvvvv */
 function isTransparent(color) {
@@ -167,23 +185,8 @@ function changeAll() {
     }
 }
 
-/* creates css to adjust pseudo after properties vvvvvvvvvvvvvvv */
-var newStyleSheet = document.createElement('style');
-newStyleSheet.innerHTML = `
-    /* changes border color for pseudo after elements */
-    .changeBorder:after {
-        border-color: `+newBorderColor+`;
-    }
-    /* changes border colors on class Box */
-    .Box, .Box-header {
-        border-color: `+newBorderColor+`;
-    }
-	`;
-// append new style sheet to website
-window.document.head.appendChild(newStyleSheet);
-/* creates css to adjust pseudo after properties ^^^^^^^^^^^^^^^ */
-
 /* get all children of children vvvvvvvvvvvvvvv */
+// source https://stackoverflow.com/a/33529528/13033365
 function getDescendants(node, accum) {
     var i;
     accum = accum || [];
@@ -283,6 +286,13 @@ function changeAllBorder() {
 }
 /* iterate through all divs in grid to change border colors ^^^^^^^^^^^^^^^ */
 
+/* group change functions together vvvvvvvvvvvvvvv */
+function changeAllElements() {
+    changeAll();
+    changeAllBorder();
+}
+/* group change functions together ^^^^^^^^^^^^^^^ */
+
 changeAll();
 changeAllBorder();
 
@@ -318,14 +328,8 @@ document.body.addEventListener('DOMNodeInserted', function(e) {
 */
 /* unknown function ^^^^^^^^^^^^^^^ */
 
-/* group change functions together vvvvvvvvvvvvvvv */
-function changeAllElements() {
-    changeAll();
-    changeAllBorder();
-}
-/* group change functions together ^^^^^^^^^^^^^^^ */
-
 /* capture ajax requests and run change functions when they are finished vvvvvvvvvvvvvvv */
+// source https://dmitripavlutin.com/catch-the-xmlhttp-request-in-plain-javascript/
 var open = window.XMLHttpRequest.prototype.open,
     send = window.XMLHttpRequest.prototype.send;
 
@@ -348,7 +352,7 @@ function sendReplacement(data) {
 function onReadyStateChangeReplacement() {
 
     changeAllElements()
-    console.log('All elements should be changed');
+    // console.log('All elements should be changed');
 
     if(this._onreadystatechange) {
         return this._onreadystatechange.apply(this, arguments);

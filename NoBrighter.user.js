@@ -112,8 +112,8 @@ newStyleSheet.innerHTML = `
         border-color: `+newBorderColor+`;
     }
 	`;
-// append new style sheet to website
-window.document.head.appendChild(newStyleSheet);
+
+window.document.head.appendChild(newStyleSheet); // append new style sheet to website
 /* creates css to adjust pseudo after properties ^^^^^^^^^^^^^^^ */
 
 /* check if background is transparent vvvvvvvvvvvvvvv */
@@ -124,28 +124,22 @@ function isTransparent(color) {
 
 /* change background to set color vvvvvvvvvvvvvvv */
 function changeBgcolor(elem) {
-    // check if appropriate type of element
-    if (elem.nodeType !== Node.ELEMENT_NODE) {
+    if (elem.nodeType !== Node.ELEMENT_NODE) { // check if appropriate type of element
         return;
     }
 
-    // compute effective background color of element
-    var bgcolor = window.getComputedStyle(elem, null).backgroundColor;
+    var bgcolor = window.getComputedStyle(elem, null).backgroundColor; // compute effective background color of element
 
-    // if background is not transparent and within set height change the background color
-    if (bgcolor && !isTransparent(bgcolor) && elem.clientHeight >= $minHeight) {
+    if (bgcolor && !isTransparent(bgcolor) && elem.clientHeight >= $minHeight) { // if background is not transparent and within set height change the background color
         var arRGB = bgcolor.match(/\d+/g);
         var r = parseInt(arRGB[0], 10);
         var g = parseInt(arRGB[1], 10);
         var b = parseInt(arRGB[2], 10);
 
-        // we adopt HSL's lightness definition, see http://en.wikipedia.org/wiki/HSL_and_HSV
-        var brightness = (Math.max(r, g, b) + Math.min(r, g, b)) / 255 / 2;
+        var brightness = (Math.max(r, g, b) + Math.min(r, g, b)) / 255 / 2; // we adopt HSL's lightness definition, see http://en.wikipedia.org/wiki/HSL_and_HSV
 
-        // compare background brightness with threshold set
-        if (brightness > Brightness_Threshold) {
-            // change background color if threshold was exceeded
-            elem.style.backgroundColor = targetColor;
+        if (brightness > Brightness_Threshold) { // compare background brightness with threshold set
+            elem.style.backgroundColor = targetColor; // change background color if threshold was exceeded
         }
         return true;
     } else {
@@ -156,29 +150,23 @@ function changeBgcolor(elem) {
 
 /* unknown function at this time vvvvvvvvvvvvvvv */
 function changeTransparent(elem) {
-    // computer background color of element
-    var bgcolor = window.getComputedStyle(elem, null).backgroundColor;
+    var bgcolor = window.getComputedStyle(elem, null).backgroundColor; // computer background color of element
 
-    // if background color does not match or is transparent
-    if (!bgcolor || isTransparent(bgcolor)) {
-        // change background color to set color
-        elem.style.backgroundColor = targetColor;
+    if (!bgcolor || isTransparent(bgcolor)) { // if background color does not match or is transparent
+        elem.style.backgroundColor = targetColor; // change background color to set color
     }
 }
 /* unknown function at this time ^^^^^^^^^^^^^^^ */
 
 function changeAll() {
-    // iterate through all elements on site
     var len = alltags.length;
-    for (var i = 0; i < len; i++) {
-        // change background colors and track changed elements
+
+    for (var i = 0; i < len; i++) { // iterate through all elements on site // change background colors and track changed elements
         var changed = changeBgcolor(alltags[i]);
 
-        // format elements names for tracking
-        var tagName = alltags[i].tagName.toUpperCase();
+        var tagName = alltags[i].tagName.toUpperCase(); // format elements names for tracking
 
-        // if element changed was BODY or HTML mark bodyChanged as true
-        if (changed && (tagName === "BODY" || tagName === "HTML")) {
+        if (changed && (tagName === "BODY" || tagName === "HTML")) { // if element changed was BODY or HTML mark bodyChanged as true
             bodyChanged = true;
         }
     }
@@ -199,47 +187,35 @@ function getDescendants(node, accum) {
 
 /* change border color vvvvvvvvvvvvvvv */
 function changeBorderColor(elem) {
-    // confirm appropriate type of element
-    if (elem.nodeType !== Node.ELEMENT_NODE) {
+    if (elem.nodeType !== Node.ELEMENT_NODE) { // confirm appropriate type of element
         return;
     }
-    // computer bordercolor of element
-    var borderColor = window.getComputedStyle(elem, null).borderColor;
 
-    // checks if element has a border color and if it is transparent or not
-    if (borderColor && !isTransparent(borderColor)) {
+    var borderColor = window.getComputedStyle(elem, null).borderColor; // computer bordercolor of element
+
+    if (borderColor && !isTransparent(borderColor)) { // checks if element has a border color and if it is transparent or not
         var arRGB = borderColor.match(/\d+/g);
         var r = parseInt(arRGB[0], 10);
         var g = parseInt(arRGB[1], 10);
         var b = parseInt(arRGB[2], 10);
 
-        // we adopt HSL's lightness definition, see http://en.wikipedia.org/wiki/HSL_and_HSV
-        var brightness = (Math.max(r, g, b) + Math.min(r, g, b)) / 255 / 2;
+        var brightness = (Math.max(r, g, b) + Math.min(r, g, b)) / 255 / 2; // we adopt HSL's lightness definition, see http://en.wikipedia.org/wiki/HSL_and_HSV
+        var pseudoVar = window.getComputedStyle(elem, ":after").borderColor; // computes whether element has pseudo :after css
 
-        // computes whether element has pseudo :after css
-        var pseudoVar = window.getComputedStyle(elem, ":after").borderColor;
+        if (brightness > .5) { // currently debugging brightness levels
+            elem.style.borderColor = newBorderColor; // changes element border to newBorderColor
 
-        // currently debugging brightness levels
-        if (brightness > .5) {
-            // changes element border to newBorderColor
-            elem.style.borderColor = newBorderColor;
-
-            // if element has pseudo :after css adds preset css class to override it
-            if (pseudoVar) {
-                // adds class to element
-                elem.classList.add("changeBorder");
+            if (pseudoVar) { // if element has pseudo :after css adds preset css class to override it
+                elem.classList.add("changeBorder"); // adds class to element
             }
-            // console.log(elem.nodeName + " brightness is greater than 5")
+            // console.log(elem.nodeName + " brightness is greater than 5") // for debugging
         } else {
-            // changes element border to newBorderColor
-            elem.style.borderColor = newBorderColor;
+            elem.style.borderColor = newBorderColor; // changes element border to newBorderColor
 
-            // if element has pseudo :after css adds preset css class to override it
-            if (pseudoVar) {
-                // adds class to element
-                elem.classList.add("changeBorder");
+            if (pseudoVar) { // if element has pseudo :after css adds preset css class to override it
+                elem.classList.add("changeBorder"); // adds class to element
             }
-            // console.log(elem.nodeName + " brightness is less than 5")
+            // console.log(elem.nodeName + " brightness is less than 5") // for debugging
         }
         return true;
     } else {
@@ -250,34 +226,24 @@ function changeBorderColor(elem) {
 
 /* iterate through all divs in grid to change border colors vvvvvvvvvvvvvvv */
 function changeAllBorder() {
-    // choose elements to target for change border
-    var allDivs = document.querySelectorAll('div[role="grid"]'); // example: var allDivs = document.querySelectorAll('div[role="grid"],div[role="gridcell"],div[role="row"]');
-
-    // get all matching divs and iterate through them
+    var allDivs = document.querySelectorAll('div[role="grid"]'); // choose elements to target for change border // example: var allDivs = document.querySelectorAll('div[role="grid"],div[role="gridcell"],div[role="row"]');
     var len = allDivs.length;
-    for (var i = 0; i < len; i++) {
-        // changes all top elements
-        changeBorderColor(allDivs[i]);
 
-        // calculates all descendants
-        var allDivsDescendants = getDescendants(allDivs[i]);
+    for (var i = 0; i < len; i++) { // get all matching divs and iterate through them
+        changeBorderColor(allDivs[i]); // changes all top elements
 
-        // iterates through all descendants
+        var allDivsDescendants = getDescendants(allDivs[i]); // calculates all descendants
         var len2 = allDivsDescendants.length;
-        for (var i2 = 0; i2 < len2; i2++) {
-            // changes border of all descendants
-            changeBorderColor(allDivsDescendants[i2]);
 
-            // checks if descendants have children and changes those as well
-            if (allDivsDescendants.hasChildren) {
-                // calculates all children of descendants
-                var allDivsDescendantsChildren = allDivsDescendants.children;
+        for (var i2 = 0; i2 < len2; i2++) { // iterates through all descendants
+            changeBorderColor(allDivsDescendants[i2]); // changes border of all descendants
 
-                // iterates through all children of descendants
+            if (allDivsDescendants.hasChildren) { // checks if descendants have children and changes those as well
+                var allDivsDescendantsChildren = allDivsDescendants.children; // calculates all children of descendants
                 var len3 = allDivsDescendantsChildren.length;
-                for (var i3 = 0; i3 < len3; i3++) {
-                    // changes border of all children of descendants
-                    changeBorderColor(allDivsDescendantsChildren[i3]);
+
+                for (var i3 = 0; i3 < len3; i3++) { // iterates through all children of descendants
+                    changeBorderColor(allDivsDescendantsChildren[i3]); // changes border of all children of descendants
                 }
             }
         }
@@ -295,8 +261,7 @@ function changeAllElements() {
 changeAll();
 changeAllBorder();
 
-if (window.top == window) {
-    // change transparent only when in top frame
+if (window.top == window) { // change transparent only when in top frame
     if (!bodyChanged) {
         changeTransparent(document.body.parentNode);
     }
@@ -342,16 +307,15 @@ function sendReplacement(data) {
         this._onreadystatechange = this.onreadystatechange;
     }
 
-    // console.log('Request sent');
+    // console.log('Request sent'); // for debugging
 
     this.onreadystatechange = onReadyStateChangeReplacement;
     return send.apply(this, arguments);
 }
 
 function onReadyStateChangeReplacement() {
-
     changeAllElements()
-    // console.log('All elements should be changed');
+    // console.log('All elements should be changed'); // for debugging
 
     if(this._onreadystatechange) {
         return this._onreadystatechange.apply(this, arguments);

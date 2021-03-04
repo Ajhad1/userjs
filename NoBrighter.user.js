@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name        NoBrighter
 // @namespace   https://github.com/ajhad1/userjs/NoBrighter.user.js
-// @description Change element's background color that is too bright to a light green.
+// @description Change element's background color that is too bright to a light green. AND continuously monitor for updates to page without page load
 // @author      henix
 // @version     20210304.1
 // @include     http://*
@@ -251,15 +251,40 @@ function changeAllBorder() {
 }
 /* iterate through all divs in grid to change border colors ^^^^^^^^^^^^^^^ */
 
+/* JIRA update to webpage to make it better to use by moving menu around vvvvvvvvvvvvvvv */
+function jiraUpdate() { // moves operation items to top-header
+    // await new Promise(r => setTimeout(r, 2000)); // waits for page load
+    if ( window.location.href.match(/https\:\/\/identityfusion\.atlassian\.net\/.*/gi) ) {
+        // console.log("JIRA Match Found in "+window.location.href); // for debugging
+
+        if (document.getElementById("ghx-operations")) {
+            var fragment = document.createDocumentFragment(); // creates fragment to insert later
+
+            // console.log("Found ghx-operations"); // for debugging
+            document.getElementById("ghx-operations").style.order = 1; // sets the order for the header for the element
+            fragment.appendChild(document.querySelector("#ghx-operations")); // moves the element to the fragment
+            document.querySelector("#ghx-header > div").appendChild(fragment); // moves the fragment containing the element to the header
+
+            document.getElementById("ghx-quick-filters").style.marginBottom = '0px'; // adjust the margin for the element to match the header
+            document.getElementById("ghx-header").style.paddingBottom = '0px'; // adjusts the headers padding to better fit main content
+        } else {
+            // console.log("Did not find ghx-operations"); // for debugging
+        };
+    };
+}
+/* JIRA update to webpage to make it better to use by moving menu around ^^^^^^^^^^^^^^^ */
+
 /* group change functions together vvvvvvvvvvvvvvv */
 function changeAllElements() {
     changeAll();
     changeAllBorder();
+    jiraUpdate();
 }
 /* group change functions together ^^^^^^^^^^^^^^^ */
 
-changeAll();
-changeAllBorder();
+// changeAll();
+// changeAllBorder();
+changeAllElements();
 
 if (window.top == window) { // change transparent only when in top frame
     if (!bodyChanged) {
@@ -314,7 +339,7 @@ function sendReplacement(data) {
 }
 
 function onReadyStateChangeReplacement() {
-    changeAllElements()
+    changeAllElements();
     // console.log('All elements should be changed'); // for debugging
 
     if(this._onreadystatechange) {
